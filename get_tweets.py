@@ -1,6 +1,5 @@
 from selenium import webdriver
 import time
-import pickle
 import csv
 
 
@@ -29,21 +28,12 @@ def main():
 
     # Get tweets
     tweets = browser.find_elements_by_class_name('tweet-text')
-    tweet_texts = [t.text for t in tweets]
+    tweet_texts = [[t.text] for t in tweets]
 
     # Save tweet texts in CSV
     outfile = open('tweets.csv', 'w')
-    outwriter = csv.writer(outfile)
-    outwriter.writerows(tweet_texts)
+    csv.writer(outfile).writerows(tweet_texts)
     outfile.close()
-
-    for t in tweet_texts:
-        print(t, '\n')
-
-    # Save tweets as a pickle
-    #save_file = open('tweets.pickle', 'wb')
-    #pickle.dumps(tweet_texts, save_file)
-    #save_file.close()
 
     # Fin
     browser.close()

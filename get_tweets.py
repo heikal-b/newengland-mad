@@ -31,7 +31,7 @@ def main():
     tweet_texts = [[t.text] for t in tweets]
 
     # Save tweet texts in CSV
-    outfile = open('tweets.csv', 'w')
+    outfile = open('tweets.csv', 'w', encoding='utf-8')
     csv.writer(outfile).writerows(tweet_texts)
     outfile.close()
 

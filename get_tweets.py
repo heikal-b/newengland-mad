@@ -19,18 +19,19 @@ def main():
     page_body = browser.find_element_by_class_name('container')
     page_body.click()
 
-    win_size = browser.get_window_size()
+    # win_size = browser.get_window_size() # needed in the future
 
     # Scroll down page
-    for i in range(2):
+    for i in range(5):
         browser.execute_script('window.scrollTo(0,document.body.scrollHeight)')
         time.sleep(2)
-        new_win_size = browser.get_window_size()
+        # new_win_size = browser.get_window_size() # needed in the future
 
     # Get tweets
     tweets = browser.find_elements_by_class_name('tweet-text')
     tweet_texts = [t.text for t in tweets]
 
+    # Save tweet texts in CSV
     outfile = open('tweets.csv', 'w')
     outwriter = csv.writer(outfile)
     outwriter.writerows(tweet_texts)
@@ -39,10 +40,12 @@ def main():
     for t in tweet_texts:
         print(t, '\n')
 
+    # Save tweets as a pickle
     #save_file = open('tweets.pickle', 'wb')
     #pickle.dumps(tweet_texts, save_file)
     #save_file.close()
 
+    # Fin
     browser.close()
 
 

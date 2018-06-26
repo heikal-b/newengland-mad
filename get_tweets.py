@@ -63,10 +63,8 @@ def main():
     # get_tweets(url_template.format('Rhode Island'), 'rhodeisland')
     # get_tweets(url_template.format('Connecticut'), 'Connecticut')
 
-    # get_tweets(url_template.format('Boston'), 'Boston')
-    # get_tweets(url_template.format('Worcester'), 'Worcester')
-
-    # get_tweets('https://twitter.com/search?l=en&q=mad%20near%3A%22Boston%2C%20MA%22%20within%3A400mi&src=typd', 'BostonRadius')
+    # get_tweets(url_template.format('Boston'), 'boston')
+    # get_tweets(url_template.format('Worcester'), 'worcester')
 
 
 if __name__ == '__main__':

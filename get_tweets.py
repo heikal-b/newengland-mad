@@ -1,6 +1,7 @@
 from selenium import webdriver
 import time
 import csv
+import os
 
 
 def get_tweets(url, statename):
@@ -55,16 +56,18 @@ def main():
     # url template for Twitter's search age
     url_template = 'https://twitter.com/search?l=en&q=mad%20near%3A%22{0}%2C%20USA%22%20within%3A15mi&src=typd'
 
-    # get Tweets by locality
-    get_tweets(url_template.format('Maine'), 'maine')
-    # get_tweets(url_template.format('New Hampshire'), 'newhampshire')
-    # get_tweets(url_template.format('Vermont'), 'vermont')
-    # get_tweets(url_template.format('Massachusetts'), 'massachusetts')
-    # get_tweets(url_template.format('Rhode Island'), 'rhodeisland')
-    # get_tweets(url_template.format('Connecticut'), 'Connecticut')
+    if not os.path.exists('state_tweets'):
+        os.mkdir('state_tweets')
 
-    # get_tweets(url_template.format('Boston'), 'boston')
-    # get_tweets(url_template.format('Worcester'), 'worcester')
+    save_dir = 'state_tweets/'
+
+    # get Tweets by locality
+    get_tweets(url_template.format('Maine'), '{0}maine'.format(save_dir))
+    # get_tweets(url_template.format('New Hampshire'), '{0}newhampshire'.format(save_dir))
+    # get_tweets(url_template.format('Vermont'), '{0}vermont'.format(save_dir))
+    # get_tweets(url_template.format('Massachusetts'), '{0}massachusetts'.format(save_dir))
+    # get_tweets(url_template.format('Rhode Island'), '{0}rhodeisland'.format(save_dir))
+    # get_tweets(url_template.format('Connecticut'), '{0}connecticut'.format(save_dir))
 
 
 if __name__ == '__main__':

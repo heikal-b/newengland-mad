@@ -4,7 +4,28 @@ import csv
 import os
 
 
-def get_tweets(url, statename):
+def scroll_down(browser, interval=2, second_chance_interval=5):
+    # For checking if it's possible to scroll further
+    page = browser.find_element_by_id('page-container')
+    win_height = page.size['height']
+    reached_bottom = False
+
+    while not reached_bottom:
+        browser.execute_script('window.scrollTo(0,document.body.scrollHeight)')
+        time.sleep(interval)
+
+        new_win_height = page.size['height']
+
+        # If the page is not growing, wait a second time
+        if new_win_height == win_height:
+            time.sleep(second_chance_interval)
+            if win_height == page.size['height']:
+                reached_bottom = True
+        else:
+            win_height = new_win_height
+
+
+def get_tweets(url, save_dir):
     """
     Get tweets by scrolling down a Twitter search page
     :return:
@@ -18,32 +39,15 @@ def get_tweets(url, statename):
     page_body = browser.find_element_by_class_name('container')
     page_body.click()
 
-    # For checking if it's possible to scroll further
-    page = browser.find_element_by_id('page-container')
-    win_height = page.size['height']
-    reached_bottom = False
-
-    # Scroll down the page until no new tweets are loaded
-    while not reached_bottom:
-        browser.execute_script('window.scrollTo(0,document.body.scrollHeight)')
-        time.sleep(2)
-
-        new_win_height = page.size['height']
-
-        # If the page is not growing, wait a second time
-        if new_win_height == win_height:
-            time.sleep(10)
-            if win_height == page.size['height']:
-                reached_bottom = True
-        else:
-            win_height = new_win_height
+    # Scroll down the page and wait for new tweets to load
+    scroll_down(browser, interval=2, second_chance_interval=10)
 
     # Get tweets from html file
     tweets = browser.find_elements_by_class_name('tweet-text')
     tweet_texts = [[t.text] for t in tweets]
 
     # Save tweet texts in CSV
-    filename = '{0}.csv'.format(statename.lower())
+    filename = '{0}.csv'.format(save_dir)
     outfile = open(filename, 'w', encoding='utf-8')
     csv.writer(outfile).writerows(tweet_texts)
     outfile.close()

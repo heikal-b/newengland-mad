@@ -25,7 +25,7 @@ def scroll_down(browser, interval=2, second_chance_interval=5):
             win_height = new_win_height
 
 
-def get_tweets(url, save_dir):
+def get_tweets(url, save_dir, file_stem='tweets', interval=2, second_chance_interval=10):
     """
     Get tweets by scrolling down a Twitter search page
     :return:
@@ -40,14 +40,14 @@ def get_tweets(url, save_dir):
     page_body.click()
 
     # Scroll down the page and wait for new tweets to load
-    scroll_down(browser, interval=2, second_chance_interval=10)
+    scroll_down(browser, interval, second_chance_interval)
 
     # Get tweets from html file
     tweets = browser.find_elements_by_class_name('tweet-text')
     tweet_texts = [[t.text] for t in tweets]
 
     # Save tweet texts in CSV
-    filename = '{0}.csv'.format(save_dir)
+    filename = '{0}/{1}.csv'.format(save_dir, file_stem)
     outfile = open(filename, 'w', encoding='utf-8')
     csv.writer(outfile).writerows(tweet_texts)
     outfile.close()
@@ -60,18 +60,18 @@ def main():
     # url template for Twitter's search age
     url_template = 'https://twitter.com/search?l=en&q=mad%20near%3A%22{0}%2C%20USA%22%20within%3A15mi&src=typd'
 
-    if not os.path.exists('state_tweets'):
-        os.mkdir('state_tweets')
+    save_folder = 'state_tweets'
 
-    save_dir = 'state_tweets/'
+    if not os.path.exists(save_folder):
+        os.mkdir(save_folder)
 
-    # get Tweets by locality
-    get_tweets(url_template.format('Maine'), '{0}maine'.format(save_dir))
-    # get_tweets(url_template.format('New Hampshire'), '{0}newhampshire'.format(save_dir))
-    # get_tweets(url_template.format('Vermont'), '{0}vermont'.format(save_dir))
-    # get_tweets(url_template.format('Massachusetts'), '{0}massachusetts'.format(save_dir))
-    # get_tweets(url_template.format('Rhode Island'), '{0}rhodeisland'.format(save_dir))
-    # get_tweets(url_template.format('Connecticut'), '{0}connecticut'.format(save_dir))
+    # get Tweets by state
+    get_tweets(url_template.format('Maine'), save_folder, 'maine')
+    # get_tweets(url_template.format('New Hampshire'), save_folder, 'newhampshire')
+    # get_tweets(url_template.format('Vermont'), save_folder, 'vermont')
+    # get_tweets(url_template.format('Massachusetts'), save_folder, 'massachusetts')
+    # get_tweets(url_template.format('Rhode Island'), save_folder, 'rhodeisland')
+    # get_tweets(url_template.format('Connecticut'), save_folder, 'test')
 
 
 if __name__ == '__main__':

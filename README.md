@@ -1,5 +1,5 @@
 # newengland-mad
-A linguistic study of *mad* as an adverb in New England English.
+Adverbial *mad* in New England English - a study through Twitter data
 
 This project is in the data collection stage. For this, instances of 'mad' is collected from Twitter, using *get_tweets.py.*
 The collected data files (CSV) by New England states can be found in the folder *state_tweets*. Please note that the search term in the data collection covers all instance

@@ -47,6 +47,7 @@ if __name__ == '__main__':
     csv_reader = csv.reader(open('uncertain_tweets.csv'))
     # List for accepted tweets
     accepted_tweets = []
+    unverified_tweets = []
 
     # For each tweet, submit the word next to mad to an online dictionary
     for tweet in csv_reader:
@@ -63,10 +64,16 @@ if __name__ == '__main__':
         # Otherwise save it
         if is_adj(tweet_tokenized[index+1]):
             accepted_tweets.append(tweet[0])
+        else:
+            unverified_tweets.append(tweet[0])
 
     # Save verified tweets
     pickle.dump(accepted_tweets, open('uncertain_verified.pickle', 'wb'))
     savecsv = open('uncertain_verified.csv', 'w', encoding='utf-8')
     csv.writer(savecsv).writerows([t] for t in accepted_tweets)
 
+    # Save unverified tweets
+    pickle.dump(unverified_tweets, open('uncertain_unverified.pickle', 'wb'))
+    unverified_savecsv = open('uncertain_unverified.csv', 'w', encoding='utf-8')
+    csv.writer(unverified_savecsv).writerows([t] for t in unverified_tweets)
     exit(0)

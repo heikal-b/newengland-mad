@@ -8,4 +8,8 @@ The collected data files (CSV) by New England states can be found in the folder 
 
 2) First filtering. Tweets collected from Twitter are filtered for the adverbial usage of *mad*. This is done with filter_1/filter_mad.py. The tweets are segregated into different CSV files therein according to whether it contains adverbial *mad*. 
 
-3) Second filtering. The first filtering obtained mostly cases of adverbial *mad*. However, there are some false positives. In general the false positives involve highly colloquial terms or abbreviations which have been confused as adjectives following *mad*. These cases are separated out with filter_2/filter_2.py, and the resulting data files are therein. The next plan is to possibly submit those words to the Urban Dictionary website in an automated way to check if they are adjectives.
+3) Second filtering. The first filtering obtained mostly cases of adverbial *mad*. However, there are some false positives. In general the false positives involve highly colloquial terms or abbreviations which have been confused as adjectives following *mad*.
+
+4) The finalized data are in finalized_data.csv
+
+5) Exploratory work

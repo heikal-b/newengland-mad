@@ -13,6 +13,45 @@ import csv
 import nltk
 import logging
 import pickle
+import re
+from nltk.corpus import words as eng_words
+from filter_2.ask_dict import is_adj
+
+eng_dict = dict.fromkeys(eng_words.words(), None)
+
+
+def unigram_test(next_word):
+    next_word_tag = nltk.pos_tag([next_word])[0][1]
+    return next_word_tag == 'JJ'
+
+
+def next_word_test(tagged_tweet, index):
+    return tagged_tweet[index + 1][1] == 'JJ'
+
+
+def removal_test(tweet_tokenized, index):
+    mod_sent = [w for w in tweet_tokenized if w.lower() != 'mad']
+    mod_sent = nltk.pos_tag(mod_sent)
+    return len(mod_sent) > index and mod_sent[index][1] == 'JJ'
+
+
+def new_sent_test(next_word):
+    test_phrase = ['the', 'really', next_word, 'dog']
+    test_phrase_2 = ['the', next_word, 'dog']
+
+    test_phrase_tagged = nltk.pos_tag(test_phrase)
+    test_phrase_2_tagged = nltk.pos_tag(test_phrase_2)
+
+    return test_phrase_tagged[2][1] == 'JJ' and test_phrase_2_tagged[1][1] != 'NN'
+
+
+def is_eng_word(word):
+    # Dictionary for looking up words next to mad
+    try:
+        w = eng_dict[word]
+    except KeyError:
+        return False
+    return True
 
 
 def is_adverbial_mad(tweet):
@@ -27,6 +66,8 @@ def is_adverbial_mad(tweet):
 
     # Adjacent tags that should not follow 'mad'
     exc_tags = ['CC', 'CS', 'IN', 'PRP']
+    forbidden_words = ['i', "i'll"]
+    arbitrary_list = ['funny']
 
     # If the tweet has no 'mad' at all
     try:
@@ -38,36 +79,14 @@ def is_adverbial_mad(tweet):
     if index == len(tweet_tokenized) - 1 or not tweet_tokenized[index+1].isalpha():
         return False
 
-    # If mad precedes certain tags
-    if tagged_tweet[index+1][1] in exc_tags:
+    # The word next to 'mad'
+    next_word = tweet_tokenized[index + 1]
+
+    if not is_eng_word(next_word) or tagged_tweet[index+1][1] in exc_tags or next_word.lower() in forbidden_words:
         return False
 
-    # If the word next to 'mad' is an adjective in isolation
-    next_word = tweet_tokenized[index+1]
-    if nltk.pos_tag([next_word]) == 'JJ':
-        return True
-
-    # If the word next to 'mad' is tagged as an adjective in the occurring context
-    if tagged_tweet[index+1][1] == 'JJ':
-        return True
-
-    # If the word next to 'mad' is tagged as an adjective if 'mad' wasn't there
-    mod_sent = [w for w in tweet_tokenized if w.lower() != 'mad']
-    mod_sent = nltk.pos_tag(mod_sent)
-    if len(mod_sent) > index and mod_sent[index][1] == 'JJ':
-        return True
-
-    # If the the word next to 'mad' can be tagged as an adjective in artificial contexts
-    test_phrase = ['the', 'really', next_word, 'dog']
-    test_phrase_2 = ['the', next_word, 'dog']
-
-    test_phrase_tagged = nltk.pos_tag(test_phrase)
-    test_phrase_2_tagged = nltk.pos_tag(test_phrase_2)
-
-    if test_phrase_tagged[2][1] == 'JJ' and test_phrase_2_tagged[1][1] != 'NN':
-        return True
-
-    return False
+    return (unigram_test(next_word) or next_word_test(tagged_tweet, index) or removal_test(tweet_tokenized, index)
+            or new_sent_test(next_word) or next_word.lower() in arbitrary_list or is_adj(next_word))
 
 
 if __name__ == '__main__':
@@ -86,11 +105,18 @@ if __name__ == '__main__':
     for file in city_files:
         city_csv = csv.reader(open('../cities_tweets/{0}'.format(file)))
         print(file)
+
         for row in city_csv:
+            if row[0] in excluded_tweets or row[0] in adverbial_mad_tweets:
+                continue
+
             if is_adverbial_mad(row[0]):
                 adverbial_mad_tweets.append(row[0])
             else:
                 excluded_tweets.append(row[0])
+
+    adverbial_mad_tweets = list(set(adverbial_mad_tweets))
+    excluded_tweets = list(set(excluded_tweets))
 
     # Save the lists
     pickle.dump(adverbial_mad_tweets, open('adverbial_mad_tweets.pickle', 'wb'))
